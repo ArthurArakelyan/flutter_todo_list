@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:localstorage/localstorage.dart';
+import 'dart:convert';
 
 // Widgets
 import 'package:todo_list/widgets/TodoWidget/TodoWidget.dart';
@@ -14,45 +16,45 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final LocalStorage storage = LocalStorage('todo_app');
+
   List<Todo> todos = <Todo>[];
   String todoName = '';
+  bool initialized = false;
 
-  @override
-  void initState() {
-    super.initState();
+  getTodos() {
+    return storage.getItem('todos');
+  }
 
-    todos.addAll([Todo('Buy milk'), Todo('Test')]);
+  void save() {
+    storage.setItem('todos', todoListToJson(todos));
   }
 
   void addTodo(String name) {
     setState(() {
       todos.add(Todo(name));
+      save();
     });
   }
 
   void editTodo(Todo todo, String name) {
     setState(() {
-      for (Todo element in todos) {
-        if (element == todo) {
-          element.name = name;
-        }
-      }
+      todo.name = name;
+      save();
     });
   }
 
   void deleteTodo(Todo todo) {
     setState(() {
       todos.remove(todo);
+      save();
     });
   }
 
   void toggleTodoDone(Todo todo) {
     setState(() {
-      for (Todo element in todos) {
-        if (element == todo) {
-          element.done = !todo.done;
-        }
-      }
+      todo.done = !todo.done;
+      save();
     });
   }
 
@@ -64,11 +66,39 @@ class _HomeState extends State<Home> {
         title: const Text('Todo List'),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: todos.length,
-        itemBuilder: (BuildContext context, int index) {
-          Todo todo = todos[index];
-          return TodoWidget(todo: todo, deleteTodo: deleteTodo, toggleTodoDone: toggleTodoDone, editTodo: editTodo);
+      body: FutureBuilder(
+        future: storage.ready,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.data == null) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (!initialized) {
+            var items = getTodos();
+
+            if (items != null) {
+              List<dynamic> decodedTodos = jsonDecode(items);
+              List<Todo> newTodos = [];
+
+              for (var todo in decodedTodos) {
+                newTodos.add(Todo.fromJson(todo));
+              }
+
+              todos = newTodos;
+            }
+
+            initialized = true;
+          }
+
+          return ListView.builder(
+            itemCount: todos.length,
+            itemBuilder: (BuildContext context, int index) {
+              Todo todo = todos[index];
+              return TodoWidget(todo: todo, deleteTodo: deleteTodo, toggleTodoDone: toggleTodoDone, editTodo: editTodo);
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
