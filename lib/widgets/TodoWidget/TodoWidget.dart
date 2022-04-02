@@ -52,10 +52,14 @@ class _TodoWidgetState extends State<TodoWidget> {
           },
           child: Row(
             children: [
-              Text(
-                widget.todo.name,
-                style: TextStyle(
-                  decoration: widget.todo.done ? TextDecoration.lineThrough : TextDecoration.none,
+              SizedBox(
+                width: 259,
+                child: Text(
+                  widget.todo.name,
+                  style: TextStyle(
+                    decoration: widget.todo.done ? TextDecoration.lineThrough : TextDecoration.none,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
               Checkbox(
