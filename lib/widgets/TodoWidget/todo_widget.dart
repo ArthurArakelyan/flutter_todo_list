@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
 
+// Pages
+import 'package:todo_list/pages/todo_page.dart';
+
 // Widgets
-import 'package:todo_list/widgets/TodoWidget/TodoEditModal.dart';
+import 'package:todo_list/widgets/TodoWidget/todo_edit_modal.dart';
 
 // Utils
 import 'package:todo_list/utils/todo.dart';
 
 class TodoWidget extends StatefulWidget {
-  const TodoWidget({required this.todo, required this.deleteTodo, required this.toggleTodoDone, required this.editTodo, Key? key}) : super(key: key);
+  const TodoWidget(
+    {
+      required this.todo,
+      required this.deleteTodo,
+      required this.toggleTodoDone,
+      required this.editTodo,
+      Key? key
+    }
+  ) : super(key: key);
 
   final Todo todo;
   final void Function(Todo todo) deleteTodo;
@@ -34,32 +45,44 @@ class _TodoWidgetState extends State<TodoWidget> {
     closeDialog(dialog);
   }
 
+  void showEditModal() {
+    showDialog(context: context, builder: (BuildContext dialog) {
+      return TodoEditModal(
+        initialValue: widget.todo.name,
+        handleChange: (String value) => editValue = value,
+        closeDialog: () => closeDialog(dialog),
+        submitDialog: () => submitDialog(dialog),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
       key: Key(widget.todo.id),
       child: ListTile(
         title: InkWell(
+          onLongPress: showEditModal,
           onTap: () {
-            showDialog(context: context, builder: (BuildContext dialog) {
-              return TodoEditModal(
-                initialValue: widget.todo.name,
-                handleChange: (String value) => editValue = value,
-                closeDialog: () => closeDialog(dialog),
-                submitDialog: () => submitDialog(dialog),
-              );
-            });
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => TodoPage(
+                todo: widget.todo,
+                edit: showEditModal,
+                delete: () {
+                  widget.deleteTodo(widget.todo);
+                  Navigator.pop(context);
+                },
+              )),
+            );
           },
           child: Row(
             children: [
-              SizedBox(
-                width: 259,
-                child: Text(
-                  widget.todo.name,
-                  style: TextStyle(
-                    decoration: widget.todo.done ? TextDecoration.lineThrough : TextDecoration.none,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+              Text(
+                widget.todo.name,
+                style: TextStyle(
+                  decoration: widget.todo.done ? TextDecoration.lineThrough : TextDecoration.none,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               Checkbox(
@@ -72,9 +95,7 @@ class _TodoWidgetState extends State<TodoWidget> {
           ),
         ),
         trailing: IconButton(
-          onPressed: () {
-            widget.deleteTodo(widget.todo);
-          },
+          onPressed: () => widget.deleteTodo(widget.todo),
           icon: const Icon(Icons.delete_outline),
         ),
       ),

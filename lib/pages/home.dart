@@ -3,7 +3,7 @@ import 'package:localstorage/localstorage.dart';
 import 'dart:convert';
 
 // Widgets
-import 'package:todo_list/widgets/TodoWidget/TodoWidget.dart';
+import 'package:todo_list/widgets/TodoWidget/todo_widget.dart';
 
 // Utils
 import 'package:todo_list/utils/todo.dart';

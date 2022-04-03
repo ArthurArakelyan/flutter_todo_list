@@ -18,7 +18,7 @@ class Todo {
     'done': done,
   };
 
-  static fromJson(Map<String, dynamic> map) {
+  static Todo fromJson(Map<String, dynamic> map) {
     var id = map['id'];
     var name = map['name'];
     var done = map['done'];
