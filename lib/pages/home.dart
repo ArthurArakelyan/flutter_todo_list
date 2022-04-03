@@ -23,7 +23,13 @@ class _HomeState extends State<Home> {
   bool initialized = false;
 
   getTodos() {
-    return storage.getItem('todos');
+    var todos = storage.getItem('todos');
+
+    if (todos == null) {
+      return null;
+    }
+
+    return jsonDecode(todos);
   }
 
   void save() {
@@ -79,14 +85,7 @@ class _HomeState extends State<Home> {
             var items = getTodos();
 
             if (items != null) {
-              List<dynamic> decodedTodos = jsonDecode(items);
-              List<Todo> newTodos = [];
-
-              for (var todo in decodedTodos) {
-                newTodos.add(Todo.fromJson(todo));
-              }
-
-              todos = newTodos;
+              todos = todoListFromJson(items);
             }
 
             initialized = true;

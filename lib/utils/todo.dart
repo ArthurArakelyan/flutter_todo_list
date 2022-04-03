@@ -30,3 +30,13 @@ class Todo {
 todoListToJson(List<Todo> todos) {
   return jsonEncode(todos.map((todo) => todo.toJSON()).toList());
 }
+
+List<Todo> todoListFromJson(List items) {
+  List<Todo> todos = [];
+
+  for (var todo in items) {
+    todos.add(Todo.fromJson(todo));
+  }
+
+  return todos;
+}
