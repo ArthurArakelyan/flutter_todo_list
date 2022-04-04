@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:localstorage/localstorage.dart';
 import 'dart:convert';
 
 // Widgets
 import 'package:todo_list/widgets/TodoWidget/todo_widget.dart';
+
+// Store
+import 'package:todo_list/redux/store.dart';
+import 'package:todo_list/redux/actions.dart';
 
 // Utils
 import 'package:todo_list/utils/todo.dart';
@@ -36,34 +41,6 @@ class _HomeState extends State<Home> {
     storage.setItem('todos', todoListToJson(todos));
   }
 
-  void addTodo(String name) {
-    setState(() {
-      todos.add(Todo(name));
-      save();
-    });
-  }
-
-  void editTodo(Todo todo, String name) {
-    setState(() {
-      todo.name = name;
-      save();
-    });
-  }
-
-  void deleteTodo(Todo todo) {
-    setState(() {
-      todos.remove(todo);
-      save();
-    });
-  }
-
-  void toggleTodoDone(Todo todo) {
-    setState(() {
-      todo.done = !todo.done;
-      save();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,31 +49,15 @@ class _HomeState extends State<Home> {
         title: const Text('Todo List'),
         centerTitle: true,
       ),
-      body: FutureBuilder(
-        future: storage.ready,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.data == null) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (!initialized) {
-            var items = getTodos();
-
-            if (items != null) {
-              todos = todoListFromJson(items);
-            }
-
-            initialized = true;
-          }
-
+      body: StoreConnector<AppState, List<Todo>>(
+        converter: (store) => store.state.todos,
+        builder: (context, List<Todo> otherTodos) {
           return ListView.builder(
-            itemCount: todos.length,
-            itemBuilder: (BuildContext context, int index) {
-              Todo todo = todos[index];
-              return TodoWidget(todo: todo, deleteTodo: deleteTodo, toggleTodoDone: toggleTodoDone, editTodo: editTodo);
-            },
+            itemCount: otherTodos.length,
+            itemBuilder: (context, index) {
+              Todo todo = otherTodos[index];
+              return TodoWidget(todo: todo, index: index);
+            }
           );
         },
       ),
@@ -127,13 +88,15 @@ class _HomeState extends State<Home> {
                     if (todoName.trim() == '') {
                       return;
                     }
+                    
+                    StoreProvider.of<AppState>(context)
+                      .dispatch(AddTodo(Todo(todoName)));
 
-                    addTodo(todoName);
                     Navigator.pop(build);
                     todoName = '';
                   },
                   child: const Text('Save'),
-                )
+                ),
               ],
             );
           });

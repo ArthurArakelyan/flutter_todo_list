@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
 // Pages
 import 'package:todo_list/pages/todo_page.dart';
 
 // Widgets
 import 'package:todo_list/widgets/TodoWidget/todo_edit_modal.dart';
+
+// Store
+import 'package:todo_list/redux/actions.dart';
+import 'package:todo_list/redux/store.dart';
 
 // Utils
 import 'package:todo_list/utils/todo.dart';
@@ -13,17 +18,13 @@ class TodoWidget extends StatefulWidget {
   const TodoWidget(
     {
       required this.todo,
-      required this.deleteTodo,
-      required this.toggleTodoDone,
-      required this.editTodo,
+      required this.index,
       Key? key
     }
   ) : super(key: key);
 
   final Todo todo;
-  final void Function(Todo todo) deleteTodo;
-  final void Function(Todo todo) toggleTodoDone;
-  final void Function(Todo todo, String name) editTodo;
+  final int index;
 
   @override
   State<TodoWidget> createState() => _TodoWidgetState();
@@ -39,7 +40,8 @@ class _TodoWidgetState extends State<TodoWidget> {
 
   void submitDialog(BuildContext dialog) {
     if (editValue != '' || (editValue != widget.todo.name && editValue != '')) {
-      widget.editTodo(widget.todo, editValue);
+      StoreProvider.of<AppState>(context)
+        .dispatch(EditTodo(widget.todo.id, editValue));
     }
 
     closeDialog(dialog);
@@ -67,12 +69,8 @@ class _TodoWidgetState extends State<TodoWidget> {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => TodoPage(
-                todo: widget.todo,
+                index: widget.index,
                 edit: showEditModal,
-                delete: () {
-                  widget.deleteTodo(widget.todo);
-                  Navigator.pop(context);
-                },
               )),
             );
           },
@@ -88,14 +86,18 @@ class _TodoWidgetState extends State<TodoWidget> {
               Checkbox(
                 value: widget.todo.done,
                 onChanged: (bool? value) {
-                  widget.toggleTodoDone(widget.todo);
+                  StoreProvider.of<AppState>(context)
+                    .dispatch(ToggleTodoDone(widget.todo.id));
                 },
               ),
             ],
           ),
         ),
         trailing: IconButton(
-          onPressed: () => widget.deleteTodo(widget.todo),
+          onPressed: () {
+            StoreProvider.of<AppState>(context)
+              .dispatch(DeleteTodo(widget.todo));
+          },
           icon: const Icon(Icons.delete_outline),
         ),
       ),

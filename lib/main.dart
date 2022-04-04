@@ -1,22 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
 import 'package:todo_list/pages/home.dart';
+import 'package:todo_list/redux/reducers.dart';
+import 'package:todo_list/redux/store.dart';
 
-void main () => runApp(const App());
+void main() {
+  final store = Store<AppState>(
+    reducers,
+    initialState: AppState.initial(),
+  );
+
+  runApp(App(store: store));
+}
 
 class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
+  final Store<AppState> store;
+
+  const App({required this.store, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primaryColor: Colors.deepOrange,
-        primarySwatch: Colors.deepOrange,
+    return StoreProvider<AppState>(
+      store: store,
+      child: MaterialApp(
+        theme: ThemeData(
+          primaryColor: Colors.deepOrange,
+          primarySwatch: Colors.deepOrange,
+        ),
+        home: const Home(),
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const Home(),
-      },
     );
   }
 }
