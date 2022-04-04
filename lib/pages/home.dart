@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:localstorage/localstorage.dart';
-import 'dart:convert';
 
 // Widgets
 import 'package:todo_list/widgets/TodoWidget/todo_widget.dart';
@@ -21,25 +19,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final LocalStorage storage = LocalStorage('todo_app');
-
   List<Todo> todos = <Todo>[];
   String todoName = '';
   bool initialized = false;
-
-  getTodos() {
-    var todos = storage.getItem('todos');
-
-    if (todos == null) {
-      return null;
-    }
-
-    return jsonDecode(todos);
-  }
-
-  void save() {
-    storage.setItem('todos', todoListToJson(todos));
-  }
 
   @override
   Widget build(BuildContext context) {

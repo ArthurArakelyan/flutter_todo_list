@@ -31,7 +31,8 @@ todoListToJson(List<Todo> todos) {
   return jsonEncode(todos.map((todo) => todo.toJSON()).toList());
 }
 
-List<Todo> todoListFromJson(List items) {
+List<Todo> todoListFromJson(String json) {
+  List items = jsonDecode(json);
   List<Todo> todos = [];
 
   for (var todo in items) {
