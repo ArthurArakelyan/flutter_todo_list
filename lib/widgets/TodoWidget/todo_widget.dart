@@ -41,7 +41,7 @@ class _TodoWidgetState extends State<TodoWidget> {
   void submitDialog(BuildContext dialog) {
     if (editValue != '' || (editValue != widget.todo.name && editValue != '')) {
       StoreProvider.of<AppState>(context)
-        .dispatch(EditTodo(widget.todo.id, editValue));
+        .dispatch(EditTodo(widget.index, editValue));
     }
 
     closeDialog(dialog);
@@ -87,7 +87,7 @@ class _TodoWidgetState extends State<TodoWidget> {
                 value: widget.todo.done,
                 onChanged: (bool? value) {
                   StoreProvider.of<AppState>(context)
-                    .dispatch(ToggleTodoDone(widget.todo.id));
+                    .dispatch(ToggleTodoDone(widget.index));
                 },
               ),
             ],

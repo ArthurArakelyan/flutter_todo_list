@@ -19,9 +19,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<Todo> todos = <Todo>[];
   String todoName = '';
-  bool initialized = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +31,11 @@ class _HomeState extends State<Home> {
       ),
       body: StoreConnector<AppState, List<Todo>>(
         converter: (store) => store.state.todos,
-        builder: (context, List<Todo> otherTodos) {
+        builder: (context, List<Todo> todos) {
           return ListView.builder(
-            itemCount: otherTodos.length,
+            itemCount: todos.length,
             itemBuilder: (context, index) {
-              Todo todo = otherTodos[index];
+              Todo todo = todos[index];
               return TodoWidget(todo: todo, index: index);
             }
           );

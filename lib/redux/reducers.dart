@@ -14,19 +14,12 @@ AppState reducers(AppState prevState, dynamic action) {
     state.todos.remove(action.payload);
     return state;
   } else if (action is EditTodo) {
-    for (var todo in state.todos) {
-      if (todo.id == action.id) {
-        todo.name = action.name;
-      }
-    }
+    state.todos[action.index].name = action.name;
 
     return state;
   } else if (action is ToggleTodoDone) {
-    for (var todo in state.todos) {
-      if (todo.id == action.id) {
-        todo.done = !todo.done;
-      }
-    }
+    var todo = state.todos[action.index];
+    todo.done = !todo.done;
 
     return state;
   }

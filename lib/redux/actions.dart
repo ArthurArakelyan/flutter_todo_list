@@ -7,10 +7,10 @@ class AddTodo {
 }
 
 class EditTodo {
-  String id;
+  int index;
   String name;
 
-  EditTodo(this.id, this.name);
+  EditTodo(this.index, this.name);
 }
 
 class DeleteTodo {
@@ -20,7 +20,7 @@ class DeleteTodo {
 }
 
 class ToggleTodoDone {
-  String id;
+  int index;
 
-  ToggleTodoDone(this.id);
+  ToggleTodoDone(this.index);
 }
