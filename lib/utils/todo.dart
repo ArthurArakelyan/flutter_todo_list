@@ -18,12 +18,19 @@ class Todo {
     'done': done,
   };
 
-  static Todo fromJson(Map<String, dynamic> map) {
-    var id = map['id'];
-    var name = map['name'];
-    var done = map['done'];
+  static Todo fromJson(Map<String, dynamic> json) {
+    var id = json['id'];
+    var name = json['name'];
+    var done = json['done'];
 
     return Todo(name, done, id);
+  }
+
+  static Todo fromFetchJson(Map<String, dynamic> json) {
+    return Todo(
+      json['title'],
+      json['completed'],
+    );
   }
 }
 
@@ -37,6 +44,17 @@ List<Todo> todoListFromJson(String json) {
 
   for (var todo in items) {
     todos.add(Todo.fromJson(todo));
+  }
+
+  return todos;
+}
+
+List<Todo> todoListFromFetchJson(String json) {
+  List items = jsonDecode(json);
+  List<Todo> todos = [];
+
+  for (var todo in items) {
+    todos.add(Todo.fromFetchJson(todo));
   }
 
   return todos;

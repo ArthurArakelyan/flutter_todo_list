@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_persist/redux_persist.dart';
 import 'package:redux_persist_flutter/redux_persist_flutter.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 // Pages
 import 'package:todo_list/pages/home.dart';
@@ -23,7 +24,7 @@ void main() async {
   final store = Store<AppState>(
     reducers,
     initialState: initialState ?? AppState.initialState(),
-    middleware: [persistor.createMiddleware()],
+    middleware: [persistor.createMiddleware(), thunkMiddleware],
   );
 
   runApp(App(store: store));

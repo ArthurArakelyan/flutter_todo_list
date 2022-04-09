@@ -22,6 +22,19 @@ AppState reducers(AppState prevState, dynamic action) {
     todo.done = !todo.done;
 
     return state;
+  } else if (action is StartFetchingTodos) {
+    state.todosLoading = true;
+    state.todosError = false;
+    return state;
+  } else if (action is SuccessfullyFetchedTodos) {
+    state.todos = action.payload;
+    state.todosLoading = false;
+    state.todosError = false;
+    return state;
+  } else if (action is ErrorFetchedTodos) {
+    state.todosLoading = false;
+    state.todosError = true;
+    return state;
   }
 
   return prevState;

@@ -7,6 +7,7 @@ import 'package:todo_list/widgets/TodoWidget/todo_widget.dart';
 // Store
 import 'package:todo_list/redux/store.dart';
 import 'package:todo_list/redux/actions.dart';
+import 'package:todo_list/redux/dispatch.dart';
 
 // Utils
 import 'package:todo_list/utils/todo.dart';
@@ -29,13 +30,54 @@ class _HomeState extends State<Home> {
         title: const Text('Todo List'),
         centerTitle: true,
       ),
-      body: StoreConnector<AppState, List<Todo>>(
-        converter: (store) => store.state.todos,
-        builder: (context, List<Todo> todos) {
+      body: StoreConnector<AppState, AppState>(
+        onInit: (store) {
+          store.dispatch(fetchTodosAction());
+        },
+        converter: (store) => store.state,
+        builder: (context, state) {
+          if (state.todosLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (state.todosError) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min, // centering widget
+                children: [
+                  const Text(
+                    'Can\'t get your todos.',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.red,
+                    ),
+                  ),
+                  const Padding(padding: EdgeInsets.only(top: 10)),
+                  const Text(
+                    'Please Check your internet connection!',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const Padding(padding: EdgeInsets.only(top: 5)),
+                  TextButton(
+                    child: const Text('Try again', style: TextStyle(fontSize: 18)),
+                    onPressed: () {
+                      dispatch(fetchTodosAction(), context);
+                    },
+                  ),
+                ],
+              ),
+            );
+          }
+
           return ListView.builder(
-            itemCount: todos.length,
+            itemCount: state.todos.length,
             itemBuilder: (context, index) {
-              Todo todo = todos[index];
+              Todo todo = state.todos[index];
               return TodoWidget(todo: todo, index: index);
             }
           );
@@ -68,9 +110,8 @@ class _HomeState extends State<Home> {
                     if (todoName.trim() == '') {
                       return;
                     }
-                    
-                    StoreProvider.of<AppState>(context)
-                      .dispatch(AddTodo(Todo(todoName)));
+
+                    dispatch(AddTodo(Todo(todoName)), context);
 
                     Navigator.pop(build);
                     todoName = '';

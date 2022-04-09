@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 
 // Pages
 import 'package:todo_list/pages/todo_page.dart';
@@ -9,7 +8,7 @@ import 'package:todo_list/widgets/TodoWidget/todo_edit_modal.dart';
 
 // Store
 import 'package:todo_list/redux/actions.dart';
-import 'package:todo_list/redux/store.dart';
+import 'package:todo_list/redux/dispatch.dart';
 
 // Utils
 import 'package:todo_list/utils/todo.dart';
@@ -40,8 +39,7 @@ class _TodoWidgetState extends State<TodoWidget> {
 
   void submitDialog(BuildContext dialog) {
     if (editValue != '' || (editValue != widget.todo.name && editValue != '')) {
-      StoreProvider.of<AppState>(context)
-        .dispatch(EditTodo(widget.index, editValue));
+      dispatch(EditTodo(widget.index, editValue), context);
     }
 
     closeDialog(dialog);
@@ -86,8 +84,7 @@ class _TodoWidgetState extends State<TodoWidget> {
               Checkbox(
                 value: widget.todo.done,
                 onChanged: (bool? value) {
-                  StoreProvider.of<AppState>(context)
-                    .dispatch(ToggleTodoDone(widget.index));
+                  dispatch(ToggleTodoDone(widget.index), context);
                 },
               ),
             ],
@@ -95,8 +92,7 @@ class _TodoWidgetState extends State<TodoWidget> {
         ),
         trailing: IconButton(
           onPressed: () {
-            StoreProvider.of<AppState>(context)
-              .dispatch(DeleteTodo(widget.todo));
+            dispatch(DeleteTodo(widget.todo), context);
           },
           icon: const Icon(Icons.delete_outline),
         ),

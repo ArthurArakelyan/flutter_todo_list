@@ -7,6 +7,7 @@ import 'package:todo_list/shared_widgets/confirmation_dialog.dart';
 // Store
 import 'package:todo_list/redux/actions.dart';
 import 'package:todo_list/redux/store.dart';
+import 'package:todo_list/redux/dispatch.dart';
 
 // Utils
 import 'package:todo_list/utils/todo.dart';
@@ -43,7 +44,7 @@ class _TodoPageState extends State<TodoPage> {
                       confirmMessage: 'Delete',
                       onConfirm: () {
                         Navigator.pop(context);
-                        StoreProvider.of<AppState>(context).dispatch(DeleteTodo(todo));
+                        dispatch(DeleteTodo(todo), context);
                       },
                     );
                   });
